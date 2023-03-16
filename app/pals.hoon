@@ -52,10 +52,112 @@
 ::    /leeches   leeche-effect   effect for every addition/removal
 ::
 /-  *pals
-/+  rudder, dbug, verb, default-agent
+/+  rudder, dbug, verb, default-agent, goon
 ::
 /~  pages  (page:rudder records command)  /app/pals/webui
 ::
+|%
++$  status  ?(%leeche %target %pal)
+++  ui-filter
+  |=  [name=term count=@ud value=?]
+  :+  name
+    :~  lede/(crip "{(trip name)}: {(scow %ud count)}")
+        value/f/value
+    ==
+  ~
+++  ui-pals
+  |=  [=@p tags=(set term)]
+  ^-  goad:goon
+  (ui-ship p %pal tags)
+::
+++  ui-ship
+  |=  [patp=@p status=?(%leeche %target %pal) tags=(set term)]
+  ^-  goad:goon
+  :+  p/patp
+    :~  value/p/patp
+    ==
+  :~  :+  %status
+        :~  lede/'Status'
+            value/tas/status
+        ==
+      ~
+    ::
+      :+  %tags
+        :~  lede/'tags'
+            :-  %act
+            :~  [%add 'Add' 'Add a tag to this ship']
+            ==
+        ==
+      %+  turn  ~(tap in tags)
+      |=  tag=term
+      :+  tag
+        :~  value/tas/tag
+            :-  %act
+            :~  [%del 'delete' 'Delete this tag']
+            ==
+        ==
+      ~
+  ==
+++  ui-main
+  |=  rec=records
+  ^-  goad:goon
+  :+  %pals
+    :~  lede/'%pals manager'
+        info/'Keep track of your friends! Other applications can use this list to find ships to talk to, pull content from, etc'
+    ==
+  :~
+    :+  %filter
+      :~  lede/'filter'
+          info/'Selecting these filters will allow you to narrow the list of %pals displayed'
+
+      ==
+    :~  %+  ui-filter  'all'
+        [~(wyt by outgoing.rec) &]
+    ::
+        %+  ui-filter  'pals'
+        [~(wyt in incoming.rec) |]
+    ::
+        %+  ui-filter  'targets'
+        [~(wyt in (~(dif in ~(key by outgoing.rec)) incoming.rec)) |]
+    ::
+        %+  ui-filter  'leeches'
+        [~(wyt in (~(dif in incoming.rec) ~(key by outgoing.rec))) |]
+    ==
+  ::
+    :+  %labels
+      :~  lede/'labels'
+          info/'Selecting these labels will allow you to narrow the list of %pals displayed'
+
+      ==
+    =-  (turn - ui-filter)
+    =|  res=(list [tag=@ta num=@ud active=?])
+    =-  (turn - |=([@ta @ud] [+<- +<+ |]))
+    %~  tap  by
+    %+  roll  ~(tap by outgoing.rec)
+    |=  [[=ship tags=(set @ta)] acc=(map @ta @ud)]
+    %+  roll  ~(tap in tags)
+    |=  [tag=@ta acc=_acc]
+    (~(put by acc) tag +((~(gut by acc) tag 0)))
+  ::
+    :+  %list
+      ~[lede/'List of pals']
+    =-  (turn - ui-ship)
+    %+  turn  ~(tap by outgoing.rec)
+    |=  [=ship tags=(set @ta)]
+    ^+  [ship *status tags]
+    [ship (get-status ship rec) tags]
+  ==
+++  get-status
+  |=  [=ship rec=records]
+  ^-  status
+  ?+  :-  (~(has in incoming.rec) ship)
+      (~(has by outgoing.rec) ship)
+    !!
+    [%.y %.y]  %pal
+    [%.y %.n]  %leeche
+    [%.n %.y]  %target
+  ==
+--
 |%
 +$  state-0  [%0 records]
 ::
@@ -280,6 +382,11 @@
             %+  turn  ~(tap in incoming)
             |=(=^^ship [(rsh 3 (scot %p ship)) b+&])
         ==
+      ::
+          [%x %goon *]
+        =-  ``noun+!>(-)
+        ^-  goad:goon
+        (ui-main +.state)
       ==
   ::  scry results
   ++  arc  |=  l=(list @ta)  ``noun+!>(`arch`~^(malt (turn l (late ~))))
