@@ -1,6 +1,6 @@
 ::  pals index
 ::
-/-  *pals
+/-  *pals, contact=contacts
 /+  rudder, sigil-svg=sigil
 ::
 ^-  (page:rudder records command)
@@ -364,8 +364,17 @@
           ==
     ==
   ::
+  ++  por
+    |=  [a=* b=*]
+    ?:  ?=(@ a)
+      ?>  ?=(@ b)
+      (aor (scot %p a) (scot %p b))
+    ?>  ?=(@ -.a)
+    ?>  ?=([@ *] b)
+    (aor (scot %p -.a) (scot %p -.b))
+  ::
   ++  mutuals  ~+
-    %+  skim  (sort ~(tap by outgoing) dor)
+    %+  skim  (sort ~(tap by outgoing) por)
     |=  [=ship les=(set @ta)]
     ?&  (~(has in incoming) ship)
     ?|  =(~ tag)
@@ -383,23 +392,40 @@
     |=  [[sa=ship ma=*] [sb=ship mb=*]]
     =+  a=(~(get by receipts) sa)
     =+  b=(~(get by receipts) sb)
-    ?:  =(a b)  (dor ma mb)
+    ?:  =(a b)  (por sa sb)
     ?~(a ?=(~ b) ?~(b & |(u.a !u.b)))
   ::
   ++  leeches  ~+
     ?.  =(~ tag)  ~
-    %+  murn  (sort ~(tap in incoming) dor)
+    %+  murn  (sort ~(tap in incoming) por)
     |=  =ship
     ?:  (~(has by outgoing) ship)  ~
     (some ship ~)
   ::
+<<<<<<< HEAD
   ++  contacts  ~+  ~
+=======
+  ++  contacts  ~+
+    ::TODO  but only if permission has been granted
+    =/  base=path
+      /(scot %p our.bowl)/contacts/(scot %da now.bowl)
+    ?.  .^(? %gu (snoc base %$))  *rolodex:contact
+    ~&  %hittem
+    .^(rolodex:contact %gx (weld base /all/noun))
+>>>>>>> origin/master
   ::
   ++  sigil
     |=  =ship
     ^-  manx
     =/  bg=@ux
+<<<<<<< HEAD
       0xff.ffff
+=======
+      ?~  p=(~(get by contacts) ship)  0xff.ffff
+      ?@  for.u.p                      0xff.ffff
+      ?@  con.for.u.p                  0xff.ffff
+      color.con.for.u.p
+>>>>>>> origin/master
     =/  fg=tape
       ::TODO  move into sigil.hoon or elsewhere?
       =+  avg=(div (roll (rip 3 bg) add) 3)
