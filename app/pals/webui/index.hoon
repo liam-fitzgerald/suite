@@ -402,9 +402,6 @@
     ?:  (~(has by outgoing) ship)  ~
     (some ship ~)
   ::
-<<<<<<< HEAD
-  ++  contacts  ~+  ~
-=======
   ++  contacts  ~+
     ::TODO  but only if permission has been granted
     =/  base=path
@@ -412,20 +409,15 @@
     ?.  .^(? %gu (snoc base %$))  *rolodex:contact
     ~&  %hittem
     .^(rolodex:contact %gx (weld base /all/noun))
->>>>>>> origin/master
   ::
   ++  sigil
     |=  =ship
     ^-  manx
     =/  bg=@ux
-<<<<<<< HEAD
-      0xff.ffff
-=======
       ?~  p=(~(get by contacts) ship)  0xff.ffff
       ?@  for.u.p                      0xff.ffff
       ?@  con.for.u.p                  0xff.ffff
       color.con.for.u.p
->>>>>>> origin/master
     =/  fg=tape
       ::TODO  move into sigil.hoon or elsewhere?
       =+  avg=(div (roll (rip 3 bg) add) 3)
