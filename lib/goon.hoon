@@ -13,6 +13,14 @@
 +$  goat
   $~  [~ ~]
   (pair (unit @t) (list goat))
+::
++$  blade
+  $%  [%act =term]
+      [%edit =iota]
+      [%add =iota]
+  ==
+::
++$  stab  (pair path blade)
 ++  scod
   |=  =iota
   ?@  iota  iota
@@ -62,6 +70,11 @@
       ::  %edit: This a declaration that the %value of this element is editable
       [%edit ~]
       ::
+      ::  %add: This a declaration that the %value of this element is a
+      ::  placeholder for a new item
+      ::  
+      [%add ~]
+      ::
       ::
       ::  %act: A list of interactions for this element
       ::    This is our translation of the much maligned "hamburger menu",
@@ -106,7 +119,25 @@
     ?:  ?=(%info -.i.attrs)
       `p.i.attrs
     $(attrs t.attrs)
+  ::
+  ++  edit
+    |-  ^-  ?
+    ?~  attrs
+      |
+    ?:  ?=(%edit -.i.attrs)
+      &
+    $(attrs t.attrs)
+  ::
+  ++  add
+    |-  ^-  ?
+    ?~  attrs
+      |
+    ?:  ?=(%add -.i.attrs)
+      &
+    $(attrs t.attrs)
+  ::
 
+  ::
   ++  value
     |-  ^-  (unit iota)
     ?~  attrs
