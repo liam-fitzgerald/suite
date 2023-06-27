@@ -58,11 +58,12 @@
 ::
 |%
 +$  status  ?(%leeche %target %pal)
++$  filter  $~(%all ?(%all %pals %targets %leeches))
 ++  ui-filter
   |=  [name=term count=@ud value=?]
   :+  name
     :~  lede/(crip "{(trip name)}: {(scow %ud count)}")
-        value/iota/f/value
+        value/f/value
         edit/~
     ==
   ~
@@ -75,16 +76,17 @@
   |=  [patp=@p status=?(%leeche %target %pal) tags=(set term)]
   ^-  goad:goon
   :+  p/patp
-    :~  value/iota/p/patp
+    :~  value/p/patp
     ==
   :~  :+  %status
         :~  lede/'Status'
-            value/iota/tas/status
+            value/tas/status
         ==
       ~
     ::
       :+  %tags
         :~  lede/'tags'
+            hint/~[list/~]
             :-  %act
             :~  [%add 'Add' 'Add a tag to this ship']
             ==
@@ -92,7 +94,7 @@
       %+  turn  ~(tap in tags)
       |=  tag=term
       :+  tag
-        :~  value/iota/tas/tag
+        :~  value/tas/tag
             :-  %act
             :~  [%del 'delete' 'Delete this tag']
             ==
@@ -100,7 +102,7 @@
       ~
   ==
 ++  ui-main
-  |=  rec=records
+  |=  [rec=records =filter tags=(set @tas)]
   ^-  goad:goon
   :+  %pals
     :~  lede/'%pals manager'
@@ -110,25 +112,25 @@
     :+  %filter
       :~  lede/'filter'
           info/'Selecting these filters will allow you to narrow the list of %pals displayed'
-
+          hint/~[list/~]
       ==
     :~  %+  ui-filter  'all'
-        [~(wyt by outgoing.rec) &]
+        [~(wyt by outgoing.rec) =(%all filter)]
     ::
         %+  ui-filter  'pals'
-        [~(wyt in incoming.rec) |]
+        [~(wyt in incoming.rec) =(%pals filter)]
     ::
         %+  ui-filter  'targets'
-        [~(wyt in (~(dif in ~(key by outgoing.rec)) incoming.rec)) |]
+        [~(wyt in (~(dif in ~(key by outgoing.rec)) incoming.rec)) =(%targets filter)]
     ::
         %+  ui-filter  'leeches'
-        [~(wyt in (~(dif in incoming.rec) ~(key by outgoing.rec))) |]
+        [~(wyt in (~(dif in incoming.rec) ~(key by outgoing.rec))) =(%leeches filter)]
     ==
   ::
     :+  %labels
       :~  lede/'labels'
           info/'Selecting these labels will allow you to narrow the list of %pals displayed'
-
+          hint/~[list/~]
       ==
     =-  (turn - ui-filter)
     =|  res=(list [tag=@ta num=@ud active=?])
@@ -141,7 +143,10 @@
     (~(put by acc) tag +((~(gut by acc) tag 0)))
   ::
     :+  %list
-      ~[lede/'List of pals']
+      :~  lede/'List of pals'
+          hint/~[list/~]
+      ==
+    :-  `goad:goon`[%add ~[value/p/~sampel-palnet add/~] ~]
     =-  (turn - ui-ship)
     %+  turn  ~(tap by outgoing.rec)
     |=  [=ship tags=(set @ta)]
@@ -160,7 +165,12 @@
   ==
 --
 |%
-+$  state-0  [%0 records]
++$  state-0  
+  $:  %0
+      records
+      =filter
+      labels=(set @tas)
+  ==
 ::
 +$  eyre-id  @ta
 +$  card  (wind note gift)
@@ -201,6 +211,25 @@
   |=  [=mark =vase]
   ^-  (quip card _this)
   ?+  mark  (on-poke:def mark vase)
+    ::  %goon-stab
+    
+      %goon-stab
+    =+  !<(=stab:goon vase)
+    ?:  =(p.stab /pals/filter/add)
+      ?>  ?=(%add -.q.stab)
+      ?>  ?=(%iota p.page.q.stab)
+      ?>  ?=([%p q=@] q.page.q.stab)
+      (on-poke %pals-command !>([%meet `@p`q.q.page.q.stab ~]))
+    =/  =(pole knot)  p.stab
+    ?:  ?=([%pals %filter filter=?(%all %pals %targets %leeches) ~] pole)
+      ?>  ?=(%edit -.q.stab)
+      ?>  ?=(%iota p.page.q.stab)
+      ?>  ?=([%f q=@] q.page.q.stab)
+      =.  filter  ?:(=(& q.q.page.q.stab) filter.pole %all)
+      `this
+    `this
+      
+      
     ::  %pals-command: local app control
     ::
       %pals-command
@@ -288,19 +317,19 @@
     ::  %handle-http-request: incoming from eyre
     ::
       %handle-http-request
-    =;  out=(quip card _+.state)
-      [-.out this(+.state +.out)]
-    %.  [bowl !<(order:rudder vase) +.state]
-    %-  (steer:rudder _+.state command)
+    =;  out=(quip card _+<.state)
+      [-.out this(+<.state +.out)]
+    %.  [bowl !<(order:rudder vase) +<.state]
+    %-  (steer:rudder _+<.state command)
     :^    pages
         (point:rudder /[dap.bowl] & ~(key by pages))
-      (fours:rudder +.state)
+      (fours:rudder +<.state)
     |=  cmd=command
     ^-  $@  brief:rudder
-        [brief:rudder (list card) _+.state]
+        [brief:rudder (list card) _+<.state]
     =^  caz  this
       (on-poke %pals-command !>(cmd))
-    ['Processed succesfully.' caz +.state]
+    ['Processed succesfully.' caz +<.state]
   ==
 ::
 ++  on-watch
@@ -308,6 +337,7 @@
   ^-  (quip card _this)
   ?>  =(our.bowl src.bowl)
   ?+  path  (on-watch:def path)
+    [%goon ~]           `this
     [%http-response *]  [~ this]
   ::
       [%targets ~]
