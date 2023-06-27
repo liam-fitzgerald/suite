@@ -1,6 +1,6 @@
 ::  pals index
 ::
-/-  *pals, contact=contact-store
+/-  *pals
 /+  rudder, sigil-svg=sigil
 ::
 ^-  (page:rudder records command)
@@ -393,17 +393,13 @@
     ?:  (~(has by outgoing) ship)  ~
     (some ship ~)
   ::
-  ++  contacts  ~+
-    =/  base=path
-      /(scot %p our.bowl)/contact-store/(scot %da now.bowl)
-    ?.  .^(? %gu base)  *rolodex:contact
-    .^(rolodex:contact %gx (weld base /all/noun))
+  ++  contacts  ~+  ~
   ::
   ++  sigil
     |=  =ship
     ^-  manx
     =/  bg=@ux
-      ?~(p=(~(get by contacts) ship) 0xff.ffff color.u.p)
+      0xff.ffff
     =/  fg=tape
       ::TODO  move into sigil.hoon or elsewhere?
       =+  avg=(div (roll (rip 3 bg) add) 3)

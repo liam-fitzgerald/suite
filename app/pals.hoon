@@ -62,7 +62,8 @@
   |=  [name=term count=@ud value=?]
   :+  name
     :~  lede/(crip "{(trip name)}: {(scow %ud count)}")
-        value/f/value
+        value/iota/f/value
+        edit/~
     ==
   ~
 ++  ui-pals
@@ -74,11 +75,11 @@
   |=  [patp=@p status=?(%leeche %target %pal) tags=(set term)]
   ^-  goad:goon
   :+  p/patp
-    :~  value/p/patp
+    :~  value/iota/p/patp
     ==
   :~  :+  %status
         :~  lede/'Status'
-            value/tas/status
+            value/iota/tas/status
         ==
       ~
     ::
@@ -91,7 +92,7 @@
       %+  turn  ~(tap in tags)
       |=  tag=term
       :+  tag
-        :~  value/tas/tag
+        :~  value/iota/tas/tag
             :-  %act
             :~  [%del 'delete' 'Delete this tag']
             ==
